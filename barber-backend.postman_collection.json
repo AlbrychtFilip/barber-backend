@@ -1,0 +1,532 @@
+{
+  "info": {
+    "name": "Barber Backend",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000/api"
+    },
+    {
+      "key": "token",
+      "value": ""
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/auth/register",
+            "auth": { "type": "noauth" },
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@barber.com\",\n  \"password\": \"password123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.token) {",
+                  "  pm.collectionVariables.set('token', res.token);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/auth/login",
+            "auth": { "type": "noauth" },
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@barber.com\",\n  \"password\": \"password123\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Barbershops",
+      "item": [
+        {
+          "name": "Create Barbershop",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/barbershops",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"BarberKing\",\n  \"address\": \"ul. Mokotowska 5, Warszawa\",\n  \"phoneNumber\": \"+48123456789\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get All Barbershops",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/barbershops"
+          }
+        },
+        {
+          "name": "Get Barbershop by ID",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/barbershops/:id",
+            "variable": [
+              { "key": "id", "value": "" }
+            ]
+          }
+        },
+        {
+          "name": "Update Barbershop",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/barbershops/:id",
+            "variable": [
+              { "key": "id", "value": "" }
+            ],
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"BarberKing Premium\",\n  \"address\": \"ul. Nowy Swiat 10, Warszawa\",\n  \"phoneNumber\": \"+48987654321\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Barbershop",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/barbershops/:id",
+            "variable": [
+              { "key": "id", "value": "" }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Categories",
+      "item": [
+        {
+          "name": "Create Category",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/categories",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Hair Products\",\n  \"photo\": \"hair-products.jpg\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get All Categories",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/categories"
+          }
+        },
+        {
+          "name": "Get Category by ID",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/categories/:id",
+            "variable": [
+              { "key": "id", "value": "" }
+            ]
+          }
+        },
+        {
+          "name": "Update Category",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/categories/:id",
+            "variable": [
+              { "key": "id", "value": "" }
+            ],
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Beard Products\",\n  \"photo\": \"beard-products.jpg\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Category",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/categories/:id",
+            "variable": [
+              { "key": "id", "value": "" }
+            ]
+          }
+        },
+        {
+          "name": "Add Subcategory",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/categories/:id/subcategories",
+            "variable": [
+              { "key": "id", "value": "" }
+            ],
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"subcategoryId\": \"\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Remove Subcategory",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/categories/:id/subcategories/:subcategoryId",
+            "variable": [
+              { "key": "id", "value": "" },
+              { "key": "subcategoryId", "value": "" }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Inventory",
+      "item": [
+        {
+          "name": "Create Inventory Item",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/inventory",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Pomade\",\n  \"description\": \"Strong hold pomade\",\n  \"price\": 29.99,\n  \"photo\": \"pomade.jpg\",\n  \"count\": 50,\n  \"categoryId\": \"\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get All Inventory",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/inventory"
+          }
+        },
+        {
+          "name": "Get Inventory Item by ID",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/inventory/:id",
+            "variable": [
+              { "key": "id", "value": "" }
+            ]
+          }
+        },
+        {
+          "name": "Update Inventory Item",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/inventory/:id",
+            "variable": [
+              { "key": "id", "value": "" }
+            ],
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Premium Pomade\",\n  \"price\": 39.99,\n  \"count\": 30\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Inventory Item",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/inventory/:id",
+            "variable": [
+              { "key": "id", "value": "" }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Workstations",
+      "item": [
+        {
+          "name": "Create Workstation",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/workstations",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Station 1\",\n  \"barbershopId\": \"\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get All Workstations",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/workstations"
+          }
+        },
+        {
+          "name": "Update Workstation",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/workstations/:id",
+            "variable": [
+              { "key": "id", "value": "" }
+            ],
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"VIP Station\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Workstation",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/workstations/:id",
+            "variable": [
+              { "key": "id", "value": "" }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Employees",
+      "item": [
+        {
+          "name": "Create Employee",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/employees",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Jan\",\n  \"surname\": \"Kowalski\",\n  \"email\": \"jan@barber.com\",\n  \"phoneNumber\": \"+48111222333\",\n  \"barbershopId\": \"\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get All Employees",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/employees"
+          }
+        },
+        {
+          "name": "Get Employee by ID",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/employees/:id",
+            "variable": [
+              { "key": "id", "value": "" }
+            ]
+          }
+        },
+        {
+          "name": "Update Employee",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/employees/:id",
+            "variable": [
+              { "key": "id", "value": "" }
+            ],
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Jan\",\n  \"surname\": \"Nowak\",\n  \"email\": \"jan.nowak@barber.com\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Employee",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/employees/:id",
+            "variable": [
+              { "key": "id", "value": "" }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Appointments",
+      "item": [
+        {
+          "name": "Create Appointment",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/appointments",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"clientName\": \"Adam Nowak\",\n  \"clientEmail\": \"adam@example.com\",\n  \"clientPhoneNumber\": \"+48999888777\",\n  \"startTime\": \"2026-06-21T10:00:00Z\",\n  \"duration\": 30,\n  \"employeeId\": \"\",\n  \"workstationId\": \"\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get All Appointments",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/appointments"
+          }
+        },
+        {
+          "name": "Get Appointments by Date",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/appointments?date=2026-06-21",
+              "host": ["{{baseUrl}}"],
+              "path": ["appointments"],
+              "query": [
+                { "key": "date", "value": "2026-06-21" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Appointments by Employee",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/appointments?employeeId=",
+              "host": ["{{baseUrl}}"],
+              "path": ["appointments"],
+              "query": [
+                { "key": "employeeId", "value": "" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Appointments by Workstation",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/appointments?workstationId=",
+              "host": ["{{baseUrl}}"],
+              "path": ["appointments"],
+              "query": [
+                { "key": "workstationId", "value": "" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Appointment Status",
+          "request": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/appointments/:id/status",
+            "variable": [
+              { "key": "id", "value": "" }
+            ],
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"completed\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Appointment by ID",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/appointments/:id",
+            "variable": [
+              { "key": "id", "value": "" }
+            ]
+          }
+        },
+        {
+          "name": "Update Appointment",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/appointments/:id",
+            "variable": [
+              { "key": "id", "value": "" }
+            ],
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"completed\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Appointment",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/appointments/:id",
+            "variable": [
+              { "key": "id", "value": "" }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

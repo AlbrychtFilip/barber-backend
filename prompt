@@ -1,0 +1,42 @@
+Zaimplementuj mi backend dla aplikacji do zarządzania salonami barberskimi. Aplikacja powinna:
+- Mieć autoryzacje i rejestrację użytkowników (administrator barbershopu). Póki co chce tylko autoryzacje email/password. Autoryzacja powinna być zabezpieczona JWT.
+- Wymagać JWT przy każdym endpoincie poza rejestracją i logowaniem - tam chcemy używać secreta z enva
+- Umożliwiać tworzenie, usuwanie i dodawanie nowych salonów barberskich - każdy salon powinien mieć unikalną nazwę, adres i numer telefonu
+- Pozwalać na zarządzanie inwentarzem - dodawanie, edycja i usuwanie produktów. Dodatkowo chce aby była możliwość dodawania kategorii i podkategorii produktów. Użytkownik powinien mieć możliwość przypisania produktu do kategorii oraz możliwość tworzenia podkategorii dla każdej kategorii.
+- Umożliwać dodawanie, usuwanie i edycję stanowisk pracy
+- Umożliwiać zarządzanie pracownikami - dodawanie, edycja i usuwanie pracowników - każdy pracownik powinien być przypisany do konkretnego stanowiska pracy jeżeli ma zaplanowaną wizytę klienta
+- Umożliwiać umawianie wizyt - administrator powinien mieć możliwość umawiania wizyty dla klienta. Wizyta powinna być powiązana z konkretnym pracownikiem i stanowiskiem pracy. Dodatkowo, wizyta powinna mieć określony czas trwania oraz status (np. zaplanowana, zakończona, anulowana) oraz datę rozpoczęcia.
+- Umożliwiać pobieranie informacji o wizytach dla wyznaczonych: dni, pracowników i stanowisk
+
+Informacje techniczne:
+- użyj nodejs w wersji 24 w połączeniu z express i typescript
+- użyj bazy danych PostgreSQL do przechowywania danych
+- użyj biblioteki jsonwebtoken do obsługi JWT
+- użyj biblioteki bcrypt do hashowania haseł użytkowników
+- struktura projektu powinna być modularna, z oddzielnymi folderami. Każdy moduł powinien mieć definicję controllera, serwisu i repozytorium. Controller ma przyjmować żądania HTTP, serwis powinien zawierać logikę biznesową, a repozytorium powinno zajmować się interakcją z bazą danych.
+- dodaj budowanie aplikacji lokalnie przy pomocy dockera i docker compose - chce mieć możliwość uruchomienia całej aplikacji (backend + baza danych) za pomocą jednego polecenia
+- chce aby wszystkie tabele w bazie były tworzone przy pomocy migracji
+- do połączenia do bazy oraz migracji użyj biblioteki knex
+
+Struktura bazy danych (? oznacza, że pole jest opcjonalne):
+- users (id, email, password, isActive, createdAt, updatedAt)
+- barbershops (id, name, address, phoneNumber, createdAt, updatedAt, ownerId - foreign key do users.id)
+- inventory (id, name, description, price?, photo, count, createdAt, updatedAt, categoryId - foreign key do categories.id
+- categories (id, name, photo, createdAt, updatedAt)
+- subcategories - pivot table (categoryId - foreign key do categories.id, subcategoryId - foreign key do categories.id)
+- workstations (id, name, createdAt, updatedAt, barbershopId - foreign key do barbershops.id, ownerId - foreign key do users.id)
+- employees (id, name, surname, email, phoneNumber, barbershopId - foreign key do barbershops.id, createdAt, updatedAt)
+- appointments (id, clientName, clientEmail?, clientPhoneNumber, startTime, duration, status, employeeId - foreign key do employees.id, workstationId - foreign key do workstations.id, createdAt, updatedAt)
+
+
+Chciałbym dodać dodatkowo powiadomienia SMS przy dodaniu wizyty. Wiadomość powinna iść w momencie dodania wizyty oraz 24 godziny przed wizytą.
+Do wysyłania SMSów chciałbym użyć AWS SNS. Wszystkie dane do połączenia z AWS SNS powinny być przechowywane w envach.
+Do tabeli appointments chciałbym dodać 2 dodatkowe pola: initialNotificationSent (boolean) oraz reminderNotificationSent (boolean), które będą przechowywać informację o tym, czy powiadomienie SMS zostało wysłane przy dodaniu wizyty oraz 24 godziny przed wizytą. Obie te flagi powinny być ustawione na true wyłącznie gdy faktycznie SMS z powiadomieniem wyjdzie.
+W celu wysłania powiadomienie 24h przed wizytą, chciałbym abyś dodał mechanizm, który będzie sprawdzał co godzinę wszystkie wizyty w bazie danych i wysyłał powiadomienia SMS dla tych wizyt, które mają startTime w ciągu najbliższych 24 godzin (kolumna startTime) i dla których reminderNotificationSent jest ustawione na false. Wizyty znajdują się w tabeli appointments. Po wysłaniu powiadomienia, reminderNotificationSent powinno zostać ustawione na true. Ma to być zrobione w formie cron joba który uruchamia się co 15 minut (powiino to być definiowane w envach).
+Chciałbym abyś zmienił kolumne appointments.status na enum z wartościami: "scheduled", "completed", "cancelled". Dodatkowo chciałbym abyś dodał endpoint, który pozwoli na zmianę statusu wizyty. Endpoint powinien przyjmować id wizyty oraz nowy status.
+Dodatkowo chce żebyś zmienił wszystkie kolumny którę są typu timestamp with time zone na timestamp bez timezone.
+Dodaj cron joba który w momencie gdy wizyta dobiegnie końca (czyli startTime + duration) zmienia status wizyty na "completed". Ten cron job powinien uruchamiać się co 15 minut i sprawdzać wszystkie wizyty, które mają status "scheduled" i których czas zakończenia (startTime + duration) już minął.
+
+Chce aby treść smsów wyglądała następująco:
+- Powiadomienie przy dodaniu wizyty: "Twoja wizyta w salonie [nazwa salonu] została zaplanowana na [data i godzina wizyty]."
+- Powiadomienie 24h przed wizytą: "Przypominamy o wizycie w salonie [nazwa salonu] zaplanowanej na [data i godzina wizyty]."

@@ -8,13 +8,24 @@ export interface InventoryItem {
   photo: string | null;
   count: number;
   categoryId: string;
+  barbershopId: string | null;
+  ownerId: string | null;
   created_at: Date;
   updated_at: Date;
 }
 
+export interface InventoryFilters {
+  ownerId: string;
+  barbershopId?: string;
+}
+
 export const inventoryRepository = {
-  async findAll(): Promise<InventoryItem[]> {
-    return db('inventory');
+  async findAll(filters: InventoryFilters): Promise<InventoryItem[]> {
+    const query = db('inventory').where({ ownerId: filters.ownerId });
+    if (filters.barbershopId) {
+      query.where({ barbershopId: filters.barbershopId });
+    }
+    return query;
   },
 
   async findById(id: string): Promise<InventoryItem | undefined> {

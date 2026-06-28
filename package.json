@@ -7,7 +7,8 @@
     "dev": "nodemon --watch src --ext ts --exec 'tsx src/index.ts' --legacy-watch",
     "migrate": "knex migrate:latest --knexfile knexfile.ts",
     "migrate:rollback": "knex migrate:rollback --knexfile knexfile.ts",
-    "job": "tsx src/scripts/run-job.ts"
+    "job": "tsx src/scripts/run-job.ts",
+    "seed": "tsx src/scripts/seed.ts"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",

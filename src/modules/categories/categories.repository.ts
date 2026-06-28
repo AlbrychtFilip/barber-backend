@@ -4,25 +4,36 @@ export interface Category {
   id: string;
   name: string;
   photo: string | null;
+  barbershopId: string | null;
+  ownerId: string | null;
   created_at: Date;
   updated_at: Date;
 }
 
+export interface CategoryFilters {
+  ownerId: string;
+  barbershopId?: string;
+}
+
 export const categoriesRepository = {
-  async findAll(): Promise<Category[]> {
-    return db('categories');
+  async findAll(filters: CategoryFilters): Promise<Category[]> {
+    const query = db('categories').where({ ownerId: filters.ownerId });
+    if (filters.barbershopId) {
+      query.where({ barbershopId: filters.barbershopId });
+    }
+    return query;
   },
 
   async findById(id: string): Promise<Category | undefined> {
     return db('categories').where({ id }).first();
   },
 
-  async create(data: { name: string; photo?: string }): Promise<Category> {
+  async create(data: { name: string; photo?: string; barbershopId?: string | null; ownerId?: string | null }): Promise<Category> {
     const [category] = await db('categories').insert(data).returning('*');
     return category;
   },
 
-  async update(id: string, data: Partial<{ name: string; photo: string }>): Promise<Category> {
+  async update(id: string, data: Partial<{ name: string; photo: string; barbershopId: string | null; ownerId: string | null }>): Promise<Category> {
     const [category] = await db('categories').where({ id }).update({ ...data, updated_at: db.fn.now() }).returning('*');
     return category;
   },

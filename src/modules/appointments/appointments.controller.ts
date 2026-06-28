@@ -6,9 +6,23 @@ const router = Router();
 
 router.get('/', async (req: AuthRequest, res: Response) => {
   try {
-    const { date, employeeId, workstationId } = req.query as Record<string, string | undefined>;
-    const appointments = await appointmentsService.getAll({ date, employeeId, workstationId });
+    const { date, barbershopId, employeeId, workstationId } = req.query as Record<string, string | undefined>;
+    const appointments = await appointmentsService.getAll({ ownerId: req.userId!, date, barbershopId, employeeId, workstationId });
     res.json(appointments);
+  } catch (err: any) {
+    res.status(err.status || 500).json({ error: err.message || 'Internal server error' });
+  }
+});
+
+router.get('/summary', async (req: AuthRequest, res: Response) => {
+  try {
+    const { from, to, barbershopId, employeeId, workstationId } = req.query as Record<string, string | undefined>;
+    if (!from || !to) {
+      res.status(400).json({ error: 'from and to query params are required' });
+      return;
+    }
+    const summary = await appointmentsService.getSummary({ ownerId: req.userId!, from, to, barbershopId, employeeId, workstationId });
+    res.json(summary);
   } catch (err: any) {
     res.status(err.status || 500).json({ error: err.message || 'Internal server error' });
   }
@@ -25,10 +39,10 @@ router.get('/:id', async (req: AuthRequest, res: Response) => {
 
 router.post('/', async (req: AuthRequest, res: Response) => {
   try {
-    const { clientName, clientEmail, clientPhoneNumber, startTime, duration, employeeId, workstationId } = req.body;
+    const { clientName, clientEmail, clientPhoneNumber, startTime, serviceId, employeeId, workstationId } = req.body;
 
-    if (!clientName || !clientPhoneNumber || !startTime || !duration || !employeeId || !workstationId) {
-      res.status(400).json({ error: 'clientName, clientPhoneNumber, startTime, duration, employeeId and workstationId are required' });
+    if (!clientName || !clientPhoneNumber || !startTime || !serviceId || !employeeId || !workstationId) {
+      res.status(400).json({ error: 'clientName, clientPhoneNumber, startTime, serviceId, employeeId and workstationId are required' });
       return;
     }
 
@@ -37,9 +51,10 @@ router.post('/', async (req: AuthRequest, res: Response) => {
       clientEmail,
       clientPhoneNumber,
       startTime,
-      duration,
+      serviceId,
       employeeId,
       workstationId,
+      ownerId: req.userId!,
     });
     res.status(201).json(appointment);
   } catch (err: any) {

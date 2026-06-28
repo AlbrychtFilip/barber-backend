@@ -40,3 +40,61 @@ Dodaj cron joba który w momencie gdy wizyta dobiegnie końca (czyli startTime +
 Chce aby treść smsów wyglądała następująco:
 - Powiadomienie przy dodaniu wizyty: "Twoja wizyta w salonie [nazwa salonu] została zaplanowana na [data i godzina wizyty]."
 - Powiadomienie 24h przed wizytą: "Przypominamy o wizycie w salonie [nazwa salonu] zaplanowanej na [data i godzina wizyty]."
+
+
+Chce abyś dodał opcję definiowania usług.
+1. Dodaj migracje, model i endpointy pod tworzenie, edytcje, usuwanie, pobieranie po id i wszystkich. Tabela ma nazywać się services i mieć kolumny:
+- id - uuid
+- name - varchar 255
+- barbershopId - foreign key do barbershops
+- serviceTime - integer - wartość w minutach określająca czas trwania konkretnej usługi
+
+Dodatkowo utwórz migracje i model dla tabeli servicePrices
+- id - uuid
+- price - float do 2 miejsc po przecinku
+- currency - enum USD, PLN, EUR - default PLN
+- serviceId - foreign key do services
+- barbershopId - foreign key do barbershops
+- employeeId - foreign key do employees
+
+Chce aby zwracane infromacje o services miały w sobie zarówno informacje o services jak i servicePrices
+
+2. z tabeli appointments usuń pole duration - powinno być ono definiowane przez rodzaj wybranego service - i dodaj do niej serviceId będące referencją do services.
+3. zmodyfikuj endpointy odpowiedzialne za appointments aby działały zgodnie ze zmianami z punktu 1 i 2.
+
+
+
+Teraz zastosuj dodane zmiany w poprzednim prompcie do frontu w repozytorium barber-frontend (../barber-frontend):
+- Dostosuj umawianie i edycje wizyty pod zmiany z services i appointments
+- Dodaj nową sekcje do defininiowania services i servicePrices
+
+
+W sekcji "Inwentarz" chciałbym dodatkowo aby konkretny przedmiot oraz kategoria była definiowana per salon barberski. Do tabeli
+
+Teraz chciałbym abyś dodał nową sekcję - usedInventory
+
+Backend:
+1. migracja, model i rest api pod nowy zasób. Schemat danych
+
+id - uuid
+inventoryId - foreign key do inventory
+count - integer default 0
+comment - varchar 255 nullable
+usedAt - timestamp default CURRENT_TIMESTAMP
+useType - enum [SOLD, USED, OTHER]
+createdAt
+updatedAt
+
+2. rest api pod oznaczanie produktów z inventory jako used - w momencie oznaczenia jakiegoś produktu powiniśmy zmiejszyć jego ilość w inventory - należy zabezpieczyć aby count po kalkulacjach był powyżej 0 - w innym przypadku wyrzuć error. Możesz zrobić to w module inventory. Dodatkowo dodaj endpoint do pobierania i edycji usedInventory - można edytować comment, useType, usedAt oraz count.
+3. zaktualizuj seeder
+
+Frontend:
+
+W sekcji inwentarz na liśćie produktów dodaj przycisk "Oznacz jako użyte". Po kliknięciu ma wyświelić się modal gdzie podajemy ilość zużytych materiałów wraz z informacją w jaki sposób zostało to użyte - Zużyte, Sprzedane, Inne - oraz dodatkowo można dać komentarz - max 255 znaków
+Dodaj dodatkową sekcje Zużyte produkty pomiędzy Produkty i Kategorie gdzie będzie możliwość przejrzenia zużytych produktów - powinna być też możliwość edycji. Chcemy wyświetlać Nazwe produktu, kategorię, ilość zużytych, typ zużycia, kiedy zostało użyte oraz komentarz
+
+
+Do seedera dodaj tworzenie nowego użytkownika i generowanie reszty danych dla niego. Niech user ma email admin@barber2.com i hasło password123
+
+
+claude --resume 20acaef8-c799-4adb-b3e5-556e2fd7a8aa

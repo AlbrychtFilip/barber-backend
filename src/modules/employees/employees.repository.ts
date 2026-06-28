@@ -7,17 +7,16 @@ export interface Employee {
   email: string;
   phoneNumber: string;
   barbershopId: string;
+  ownerId: string;
   created_at: Date;
   updated_at: Date;
 }
 
 export const employeesRepository = {
-  async findAllByBarbershop(barbershopId: string): Promise<Employee[]> {
-    return db('employees').where({ barbershopId });
-  },
-
-  async findAll(): Promise<Employee[]> {
-    return db('employees');
+  async findAll(ownerId: string, barbershopId?: string): Promise<Employee[]> {
+    const query = db('employees').where({ ownerId });
+    if (barbershopId) query.where({ barbershopId });
+    return query;
   },
 
   async findById(id: string): Promise<Employee | undefined> {

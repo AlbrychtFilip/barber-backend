@@ -4,9 +4,10 @@ import { employeesService } from './employees.service';
 
 const router = Router();
 
-router.get('/', async (_req: AuthRequest, res: Response) => {
+router.get('/', async (req: AuthRequest, res: Response) => {
   try {
-    const employees = await employeesService.getAll();
+    const { barbershopId } = req.query as Record<string, string | undefined>;
+    const employees = await employeesService.getAll(req.userId!, barbershopId);
     res.json(employees);
   } catch (err: any) {
     res.status(err.status || 500).json({ error: err.message || 'Internal server error' });
@@ -31,7 +32,7 @@ router.post('/', async (req: AuthRequest, res: Response) => {
       return;
     }
 
-    const employee = await employeesService.create({ name, surname, email, phoneNumber, barbershopId });
+    const employee = await employeesService.create({ name, surname, email, phoneNumber, barbershopId, ownerId: req.userId! });
     res.status(201).json(employee);
   } catch (err: any) {
     res.status(err.status || 500).json({ error: err.message || 'Internal server error' });

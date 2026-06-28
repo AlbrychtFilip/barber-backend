@@ -1,8 +1,8 @@
-import { categoriesRepository } from './categories.repository';
+import { categoriesRepository, CategoryFilters } from './categories.repository';
 
 export const categoriesService = {
-  async getAll() {
-    return categoriesRepository.findAll();
+  async getAll(filters: CategoryFilters) {
+    return categoriesRepository.findAll(filters);
   },
 
   async getById(id: string) {
@@ -14,11 +14,11 @@ export const categoriesService = {
     return { ...category, subcategories };
   },
 
-  async create(data: { name: string; photo?: string }) {
+  async create(data: { name: string; photo?: string; barbershopId?: string | null; ownerId?: string | null }) {
     return categoriesRepository.create(data);
   },
 
-  async update(id: string, data: { name?: string; photo?: string }) {
+  async update(id: string, data: { name?: string; photo?: string; barbershopId?: string | null; ownerId?: string | null }) {
     const category = await categoriesRepository.findById(id);
     if (!category) {
       throw { status: 404, message: 'Category not found' };

@@ -4,9 +4,11 @@ import { categoriesService } from './categories.service';
 
 const router = Router();
 
-router.get('/', async (_req: AuthRequest, res: Response) => {
+router.get('/', async (req: AuthRequest, res: Response) => {
   try {
-    const categories = await categoriesService.getAll();
+    const { barbershopId } = req.query as Record<string, string | undefined>;
+    const filters = { ownerId: req.userId!, ...(barbershopId ? { barbershopId } : {}) };
+    const categories = await categoriesService.getAll(filters);
     res.json(categories);
   } catch (err: any) {
     res.status(err.status || 500).json({ error: err.message || 'Internal server error' });
@@ -24,14 +26,18 @@ router.get('/:id', async (req: AuthRequest, res: Response) => {
 
 router.post('/', async (req: AuthRequest, res: Response) => {
   try {
-    const { name, photo } = req.body;
+    const { name, photo, barbershopId } = req.body;
 
     if (!name) {
       res.status(400).json({ error: 'Name is required' });
       return;
     }
 
-    const category = await categoriesService.create({ name, photo });
+    const category = await categoriesService.create({
+      name, photo,
+      barbershopId: barbershopId ?? null,
+      ownerId: req.userId ?? null,
+    });
     res.status(201).json(category);
   } catch (err: any) {
     res.status(err.status || 500).json({ error: err.message || 'Internal server error' });

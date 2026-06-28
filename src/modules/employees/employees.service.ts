@@ -1,8 +1,8 @@
 import { employeesRepository } from './employees.repository';
 
 export const employeesService = {
-  async getAll() {
-    return employeesRepository.findAll();
+  async getAll(ownerId: string, barbershopId?: string) {
+    return employeesRepository.findAll(ownerId, barbershopId);
   },
 
   async getById(id: string) {
@@ -13,7 +13,7 @@ export const employeesService = {
     return employee;
   },
 
-  async create(data: { name: string; surname: string; email: string; phoneNumber: string; barbershopId: string }) {
+  async create(data: { name: string; surname: string; email: string; phoneNumber: string; barbershopId: string; ownerId: string }) {
     return employeesRepository.create(data);
   },
 

@@ -1,4 +1,4 @@
-import { appointmentsRepository, AppointmentFilters } from './appointments.repository';
+import { appointmentsRepository, AppointmentFilters, SummaryFilters } from './appointments.repository';
 import { notificationsService } from '../notifications/notifications.service';
 
 export const appointmentsService = {
@@ -19,19 +19,21 @@ export const appointmentsService = {
     clientEmail?: string;
     clientPhoneNumber: string;
     startTime: string;
-    duration: number;
+    serviceId: string;
     employeeId: string;
     workstationId: string;
+    ownerId: string;
   }) {
     const appointment = await appointmentsRepository.create({
       clientName: data.clientName,
       clientEmail: data.clientEmail ?? null,
       clientPhoneNumber: data.clientPhoneNumber,
       startTime: new Date(data.startTime),
-      duration: data.duration,
+      serviceId: data.serviceId,
       status: 'scheduled',
       employeeId: data.employeeId,
       workstationId: data.workstationId,
+      ownerId: data.ownerId,
       initialNotificationSent: false,
       reminderNotificationSent: false,
     });
@@ -55,7 +57,7 @@ export const appointmentsService = {
     clientEmail: string | null;
     clientPhoneNumber: string;
     startTime: string;
-    duration: number;
+    serviceId: string;
     status: 'scheduled' | 'completed' | 'cancelled';
     employeeId: string;
     workstationId: string;
@@ -79,6 +81,13 @@ export const appointmentsService = {
       throw { status: 404, message: 'Appointment not found' };
     }
     return appointmentsRepository.update(id, { status });
+  },
+
+  async getSummary(filters: SummaryFilters) {
+    if (!filters.from || !filters.to) {
+      throw { status: 400, message: 'from and to date params are required' };
+    }
+    return appointmentsRepository.getSummary(filters);
   },
 
   async delete(id: string) {
